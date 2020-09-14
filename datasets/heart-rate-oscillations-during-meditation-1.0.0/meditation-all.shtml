@@ -1,0 +1,365 @@
+<!--#set var="TITLE" value=" Exaggerated Heart Rate Oscillations During Two Meditation Techniques"-->
+<!--#set var="USELOCALCSS" value="1"-->
+<!--#include virtual="/head.shtml"-->
+
+<div style="text-align: center; padding: 2em ;">
+<strong>Exaggerated Heart Rate Oscillations During Two Meditation Techniques</strong>
+
+<p>
+C.-K. Peng, PhD, Joseph E. Mietus, BS, Yanhui Liu, MSc,
+<br>
+Gurucharan Khalsa, PhD, Pamela S. Douglas, MD,
+<br>
+Herbert Benson, MD, Ary L. Goldberger, MD
+</p>
+</div>
+<p style="width: 80%; margin: 0 auto;">
+From the Margret &amp; H.A. Rey Laboratory for Nonlinear Dynamics in
+Medicine, Cardiovascular Division, and the Mind/Body Medical Institute
+of CareGroup, the Beth Israel Deaconess Medical Center, Boston,
+Massachusetts; Harvard Medical School, Boston, Massachusetts; Center
+for Polymer Studies and Department of Physics, Boston University,
+Boston, Massachusetts.</p>
+
+<div class="notice">
+This article originally appeared in the <I><a
+href="http://www.sciencedirect.com/science/article/pii/S0167527399000662"
+target="other">International
+Journal of Cardiology</a></I> <B>70:</B> 101-107, 1999.  Please cite
+this publication when referencing this material. Presentation of this
+study and the supporting data has been made possible by grants from the
+<a href="http://www.fetzer.org/" target="other">Fetzer Institute</a>, <a
+href="http://www.nasa.gov/" target="other">National Aeronautics and Space
+Administration</a>, <a href="http://www.nimh.nih.gov/" target="other">National
+Institute of Mental Health</a>, and The G. Harold and Leila Y. Mathers
+Charitable Foundation.  <a href="meditation.ps">PostScript</a> and <a
+href="meditation.pdf">PDF</a> versions are also available.  The cardiac
+inter-beat interval data on which this article is based may be found <a
+href="data/">here</a>.
+</div>
+
+
+<h2>Summary</h2>
+
+<p>
+We report extremely prominent heart rate oscillations associated with
+slow breathing during specific traditional forms of Chinese Chi and
+Kundalini Yoga meditation techniques in healthy young adults. We
+applied both spectral analysis and a novel analytic technique based on
+the Hilbert transform to quantify these heart rate dynamics.  The
+amplitude of these oscillations during meditation was significantly
+greater than in the pre-meditation control state and also in three
+non-meditation control groups: i) elite athletes during sleep, ii)
+healthy young adults during metronomic breathing, and iii) healthy
+young adults during spontaneous nocturnal breathing. This finding,
+along with the marked variability of the beat-to-beat heart rate
+dynamics during such profound meditative states, challenges the notion
+of meditation as only an autonomically quiescent state.</p>
+
+
+<h2>Introduction</h2>
+
+<p>
+There has been much interest in heart rate dynamics during a variety
+of physiological and pathological states. In addition, considerable
+attention has been focused on the potential health benefits of a
+variety of meditative, relaxation techniques and their possible
+effects on neuroautonomic function. Surprisingly, however, there is
+little information regarding the effects of meditation on beat-to-beat
+heart rate dynamics as an indirect ``assay'' of autonomic regulation
+[<a
+href="#corby78">1</a>,<a
+href="#gallois84">2</a>,<a
+ href="#sakakibara94">3</a>]. Accordingly, we collected and
+analyzed continuous heart rate time series from two groups of healthy
+young adults before and during two well-known forms of meditation.  We
+sought to determine 1) whether there are any distinctive heart rate
+dynamics during these practices, and 2) whether such meditative states
+induce a quiescent (less variable) or active (more variable) pattern
+of autonomic response.</p>
+
+
+<h2>Materials and Methods</h2>
+
+<h3>Subjects and Meditation Protocols</h3>
+
+<p>
+Two specific meditative techniques were studied: (i) Chinese Chi (or
+Qigong) meditation (as taught by Xin Yan) and (ii) Kundalini Yoga
+meditation (as taught by Yogi Bhajan).</p>
+
+<p>
+The Chi meditators were all graduate and post-doctoral students. They
+were also relative novices in their practice of Chi meditation, most
+of them having begun their meditation practice about 1-3 months
+before this study. The Kundalini Yoga subjects were considered to be at
+an advanced level of meditation training.  The subjects of both
+meditation groups were in good general health and did not follow any
+specific exercise routines. All subjects provided informed consent in
+accord with a protocol approved by the Beth Israel Deaconess Medical
+Center Institutional Review Board.</p>
+
+<p>
+The eight Chi meditators, 5 women and 3 men (age range 26-35, mean 29
+yrs), wore a Holter recorder for approximately 10 hours during which
+time they went about their ordinary daily activities.  At
+approximately 5 hours into the recording they each practiced one hour
+of meditation. Meditation beginning and ending times were delineated
+with event marks.</p>
+
+<p>
+During these sessions, the Chi meditators sat quietly, listening to
+the taped guidance of the Master. The meditators were instructed to
+breath spontaneously while visualizing the opening and closing of a
+perfect lotus in the stomach. The meditation session lasted about one
+hour.</p>
+
+<p>
+The four Kundalini Yoga meditators, 2 women and 2 men (age range
+20&ndash;52, mean 33 yrs), wore a Holter monitor for approximately one and
+half hours. 15 minutes of baseline quiet breathing were recorded
+before the 1 hour of meditation. The meditation protocol consisted of
+a sequence of breathing and chanting exercises, performed while seated
+in a cross-legged posture.  The beginning and ending of the various
+meditation sub-phases were delineated with event marks.
+
+<p>
+In addition to comparing the pre-meditation and meditation states, we
+also made comparisons to three healthy, non-meditating control groups
+from a database of retrospective electrocardiogram (ECG) signals: (i)
+A spontaneously breathing group of 11 healthy subjects (8 women and 3
+men; age range 20&ndash;35, mean 29) during sleeping hours.  (ii) A healthy
+group of 14 subjects (9 women and 5 men; age range 20&ndash;35, mean 25)
+during supine metronomic breathing at 0.25 Hz.  (iii) A group of 9
+elite triathlon athletes in their pre-race period (3 women and 6 men;
+age range 21&ndash;55, mean 39) during sleeping hours.  Except for exercise
+training in the triathlon athlete group, the overall general health
+conditions for the meditation groups and control groups were
+comparable.</p>
+
+<h3>Signal Processing and Data Analysis</h3>
+
+<p>
+The Holter tapes were scanned and annotated using a Marquette
+Electronics Model 8000T Holter scanner and annotations manually
+verified.  The resulting annotation files were then transferred to a
+Sparc workstation for further analysis. A small fraction (&lt; 1%) of
+the instantaneous RR interval heart rate time series for each
+recording was identified as outliers and deleted. Instantaneous heart
+rate time series were then derived by taking the inverse of each
+successive interbeat interval.</p>
+
+<p>
+We applied an ECG-derived respiration algorithm [<a 
+ href="#lipsitz95">4</a>,<a
+ href="#edr">5</a>]
+to obtain information about the frequency and relative amplitude of
+respiration.  Briefly, this technique is based on the observation that
+the body surface ECG is influenced by electrode motion relative to the
+heart and by changes in thoracic electrical impedance as the lungs
+fill and empty. Measurement of axis shifts at each normal QRS interval
+provide a continuous ECG-derived respiration signal. The relation
+between this signal and respiration has been confirmed by comparing
+the changes in axis direction with simultaneous measurements of chest
+circumference taken with a mercury strain gauge or pneumatic
+respiration transducer [<a href="#edr">5</a>].</p>
+ 
+<p>We cross-correlated the heart rate time series with the ECG-derived
+respiration signal.  In particular, we uniformly resampled both the
+instantaneous heart rate and the ECG-derived respiration time series
+at 2 Hz, then calculated the coherence [<a
+ href="#Recipe">6</a>] of these two
+signals.</p>
+
+<p>
+To quantify the amplitudes of heart rate oscillations during
+meditation and to compare them with those under usual basal
+conditions, two independent quantitative algorithms have been applied:</p>
+
+<p>
+(1) We calculated Fourier spectral power by applying the Lomb
+periodogram method for unevenly sampled data [<a
+ href="#Recipe">6</a>].  Spectral
+power was measured in the frequency range 0.025-0.35 Hz to ensure
+that all respiration related heart rate oscillations would be
+included.</p>
+
+<p>
+(2) We also used a Hilbert transform-based algorithm
+[<a
+ href="#cohen95">7</a>,<a
+ href="#ht">8</a>]. The advantages of using the Hilbert transform are
+two-fold: (i) it does not require stationarity of the signal; and (ii)
+it measures the amplitude and frequency of the dominant oscillation in
+the signal at each moment. However, since the Hilbert transform can be
+applied only on narrow band signals, the heart rate time series has to
+be pre-processed. First, the heart rate time series signal was
+bandpass filtered over the same frequency range (0.025 to 0.35 Hz)
+studied in the Fourier analysis. Next, a Hilbert transformation was
+performed on the filtered signal.  Thus for each subject's heart rate
+time series, we obtained a sequence of amplitudes describing the
+time-dependent magnitude of the oscillations.</p>
+
+<p>
+We then calculated the median value, <i>A</i><sub><i>m</i></sub>, of the oscillation
+amplitude obtained by the Hilbert transform for each subject.  The
+median value is a robust measurement even when a substantial number of
+outliers are present in the data.  The Hilbert transform and median
+amplitude procedure described here can be applied to time series with
+an arbitrary number of data points.  Therefore, the results can be
+compared among subjects with data sets of different lengths.</p>
+
+<h3>Statistical Analysis</h3>
+
+<p>
+To determine the effect of meditation on oscillation amplitude and
+spectral power in the meditators, values measured before and during
+meditation were compared using a paired t-test.  The Student t-test
+was used to compare values obtained during meditation to those
+obtained from each control group. A <i>p</i> value of less than 0.01
+(two-sided) was used as the level of significance for rejecting the
+null hypothesis that values measured during meditation were similar to
+those obtained outside of meditation.  Since the number of
+subjects in each meditation group was small, we pooled these subjects
+(<i>n</i>=12) for the comparisons with the control groups.  Statistical
+analysis was performed using SAS software release 6.12 (Cary, North
+Carolina).  Results are reported as mean 
+standard deviation.</p>
+
+
+<h2>Results</h2>
+
+<p>
+Figure 1 shows representative instantaneous heart rate plots for one
+Chi meditator and one Kundalini meditator.  Two features stand out: 1)
+The extremely prominent heart rate oscillations for both subjects
+during meditation.  Spectral analysis of these heart rate time series
+confirmed a peak in the range of 0.025&ndash;0.35 Hz for both groups of
+meditators. For example, Figure 2 shows illustrative data from another
+Chi meditator with a spectral peak around 0.05 Hz. 2) The overall
+variability of the time series. The heart rate dynamics typically
+showed highly complicated fluctuations, rather than a quiescent
+&ldquo;steady state.&rdquo;</p>
+
+<p>
+To test the hypothesis that these extremely large amplitude
+oscillations were related to breathing, we studied the
+cross-correlation between the heart rate and ECG-derived respiration
+signals.  Figure 3 shows the Fourier analysis of one subject's heart rate
+and ECG-derived respiration signals. The coherence measurement
+verifies that these heart rate oscillations are closely related to
+respiration.</p>
+
+<p>
+Table 1 shows the group averaged measurements of median heart rate
+oscillation amplitude calculated using the Hilbert transform method.
+During meditation, the two meditation groups both had significantly
+greater amplitude of heart rate oscillations compared to their
+pre-meditation baselines, and to the other control groups. However,
+there was no significant difference in the heart rate oscillation
+amplitude between the pre-meditation subjects and healthy controls
+during spontaneous breathing.</p>
+
+<p>
+Results of Fourier analysis, shown in Table 1, are consistent with the
+Hilbert derived powers. The frequency range we studied here roughly
+spans the low frequency (usually 0.04-0.15 Hz) and high frequency
+(usually 0.15-0.4 Hz) bands typically used in the literature.
+Therefore, the Fourier powers of this study (as well as the Hilbert
+powers <i>A</i><sub><i>m</i></sub><sup>2</sup>/2), can only be approximately compared to the sum of
+power in low frequency and high frequency bands in most other studies.
+Furthermore, the Hilbert derived power corresponds most precisely to
+the actual power of the observed oscillations of interest in the
+present study. Finally, we note that when comparing Hilbert and
+Fourier powers, the former are consistently lower because they are
+based on a single predominant frequency of interest, whereas the
+latter encompass all frequency components within a given band.</p>
+
+
+<h2>Discussion</h2>
+
+<p>
+The major and unexpected finding in this analysis of heart rate
+dynamics during these two forms of meditation in a small number of
+subjects was the presence of intermittent, extremely prominent
+oscillations in the 0.025&ndash;0.35 Hz band. For example, as shown in
+Figure 1, the heart rate varied over a 30&ndash;35 beat/min range within 5
+sec in some of the subjects.  These oscillations, observed in both Chi
+and Kundalini practitioners, correlated with slow breathing. Of note,
+these oscillations were significantly larger in amplitude than the
+variations associated with respiratory sinus arrhythmia observed
+during the pre-meditation control state, and other healthy young
+adults during metronomic or nocturnal breathing, as well as in elite
+triathlon athletes during sleep. Also of note was the highly complex
+nature of the fluctuations for the overall time series during the
+meditative states (Fig.&nbsp;1).</p>
+
+<p>
+These findings appear to contradict a conventional notion of
+meditation as only a psychologically and physiologically quiescent
+(&ldquo;homeostatic&rdquo;) state.  Instead, the selected healthy individuals we
+studied showed marked dynamic variability in heart rate during a state
+subjectively perceived as one of profound relaxation.  These findings
+raise several intriguing questions, including: 1) Do some forms of
+meditation involve a type of autonomic &ldquo;exercise&rdquo; mediated, at least
+in part, by specialized breathing maneuvers?  2) To what extent does
+the magnitude of heart rate oscillations relate to the rate and depth
+of respiration? 3) Are there &ldquo;universal&rdquo; physiological mechanisms
+involved in certain types of meditative states that are triggered by
+apparently disparate protocols developed in different cultures?</p>
+
+<p>
+To answer the above questions, future studies should also include
+other useful physiologic signals, e.g., direct measurement of
+respiration and blood pressure. Further systematic, quantitative
+analysis of cardiopulmonary dynamics in a large number of healthy
+subjects in different age groups, as well as those with a variety of
+pathologic conditions, before, during and after various meditation
+regimes should broaden our understanding of an important class of
+mind-body interactions.</p>
+
+
+<h2>Bibliography</h2>
+
+<ol>
+<li style="padding-left: 1em;"  value="1" id="corby78">
+Corby JC, Roth WT, Zarcone VP Jr, Kopell BS.
+Psychophysiological correlates of the practice of Tantric Yoga
+meditation. <I>Arch Gen Psychiatry</I> 1978;35:571-577.</li>
+
+<li style="padding-left: 1em;" value="2" id="gallois84">
+Gallois P.  Modifications neurophysiologiques et
+respiratoires lors de la pratique des techniques de relaxation.  <I>Encephale</I> 1984;10:139-144.</li>
+
+<li style="padding-left: 1em;" value="3" id="sakakibara94">
+Sakakibara M, Takeuchi S, Hayano J. Effect of
+relaxation training on cardiac parasympathetic tone. <I>Psychophysiology</I> 1994;31:223-228.</li>
+
+<li style="padding-left: 1em;" value="4" id="lipsitz95">
+Lipsitz LA, Hashimoto F, Lubowsky LP, Mietus JE,
+Moody GB, Appenzeller O, Goldberger AL. Heart rate and respiratory
+rhythm dynamics on ascent to high altitude. <I>Br Heart J</I>
+1995;74:390-396.</li>
+
+<li style="padding-left: 1em;" value="5" id="edr">
+Moody GB, Mark RG, Zoccola A, Vergani L.
+Derivation of respiratory signals from multilead ECGs. <I>Computers in Cardiology, IEEE</I> 1985;12:113-116.</li>
+
+<li style="padding-left: 1em;" value="6" id="Recipe">
+Press WH, Teukolsky SA, Vetterling WT, Flannery
+BP. Numerical recipes in C: the art of scientific computing, 2nd
+edition. New York: Cambridge University Press, 1992.</li>
+
+<li style="padding-left: 1em;" value="7" id="cohen95">
+Cohen L. Time frequency analysis.  Englewood Cliffs, NJ:
+Prentice-Hall, 1995.</li>
+
+<li style="padding-left: 1em;" value="8" id="ht">
+Ivanov PCh, Rosenblum MG, Peng C-K, Mietus J, Havlin S,
+Stanley HE, Goldberger AL. Scaling behaviour of heartbeat intervals
+obtained by wavelet-based time-series analysis. <I>Nature</I>
+1996;383:323-327.</li>
+
+</ol>
+
+<!--#include virtual="/dir-footer.shtml"-->

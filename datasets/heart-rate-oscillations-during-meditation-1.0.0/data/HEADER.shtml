@@ -1,0 +1,67 @@
+<!--#set var="TITLE" value="Exaggerated Heart Rate Oscillations During Two Meditation Techniques"-->
+<!--#set var="USELOCALCSS" value="1"-->
+<!--#include virtual="/head.shtml"-->
+
+<p>
+Heart rate time series for 5 different groups of healthy subjects can be found
+in text form in the subdirectories of this one:</p>
+
+<ul>
+<li><a href="chi/">chi</a>: <em>Chi meditation group</em>.  There are
+    two time series for each of the eight subjects (C1, C2, ... C8),
+    denoted by record names with the suffix <tt>pre</tt> for the
+    pre-meditation period and <tt>med</tt> for the meditation period.
+    Each series is about one hour in duration.</li>
+
+<li><a href="yoga/">yoga</a>: <em>Kundalini Yoga meditation
+    group</em>.  As for the Chi group, there are <tt>pre</tt> and
+    <tt>med</tt> series for each of the four subjects (Y1, Y2, Y3,
+    Y4).  Durations range from 17 to 47 minutes.</li>
+
+<li><a href="normal/">normal</a>: <em>Spontaneous breathing group</em>
+    (N1, N2, ... N11).  Volunteers were recorded while sleeping.
+    Durations are 6 hours each, except for N3 (4.6 hours).</li>
+
+<li><a href="metron/">metron</a>: <em>Metronomic breathing group</em>
+    (M1, M2, ... M14).  Volunteers were recorded while supine and
+    breathing at a fixed rate of 0.25 Hz for 10 minutes.</li>
+
+<li><a href="ironman/">ironman</a>: <em>Elite athletes</em> (I1, I2, ... I9).
+    Subjects participated in the
+    <a href="http://www.ironmanlive.com/" target="other">Ironman Triathlon</a>;
+    the recordings were obtained during sleeping hours before the event.
+    Durations range from 1 to 1.7 hours.</li>
+</ul>
+
+<p>
+A detailed description of these 5 groups can be found in the original
+article (reference below).</p>
+
+<p>
+For each recording, in addition to the text file, there are (in this directory)
+a binary annotation file (with suffix <tt>.qrs</tt>) and a text header file
+(with suffix <tt>.hea</tt>), written in the standard formats used for other
+PhysioBank databases.  Each set of three files has a common record name
+composed of a group identifier and a subject identifier (number).  Although all
+beats are marked normal in these recordings, there may be small numbers of
+abnormal beats.</p>
+
+<p>
+The text files contain the same information as in the annotation and header
+files, and may be reproduced from the annotation and header files using the
+program <a href="/physiotools/wag/ihr-1.htm"><tt>ihr</tt></a>, available here.
+The first column in each text file is the elapsed time since the beginning of
+the recording (in seconds), and the second column is the instantaneous heart
+rate (in beats/minute).  Note that these recordings generally contain lengthy
+unannotated intervals preceding the first annotation.</p>
+
+<h3>Reference</h3>
+
+<div class="reference">
+<p>
+Peng C-K, Mietus JE, Liu Y, Khalsa G, Douglas PS, Benson H, Goldberger AL.
+     <a href="/physiobank/database/meditation/">Exaggerated Heart Rate
+     Oscillations During Two Meditation Techniques</a>.  <i>International
+     Journal of Cardiology</i> <b>70</b>:101-107, 1999.</p>
+</div> <!-- end reference -->
+
