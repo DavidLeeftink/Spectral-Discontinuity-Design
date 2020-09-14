@@ -1,28 +1,42 @@
-import gpflow
-f64 = gpflow.utilities.to_default_float
-from gpflow.ci_utils import ci_niter
-import tensorflow as tf
-import tensorflow_probability as tfp
-from tensorflow_probability import distributions as tfd
-import numpy as np
+# General
+import os
+import sys
+import shutil
+import posixpath
+import warnings
+import importlib
+from IPython.core.display import display, HTML
+display(HTML("<style>.container { width:100% !important; }</style>"))
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # Hide tensorflow warnings.
+warnings.simplefilter('ignore')
+
+# SciPy
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from matplotlib.gridspec import GridSpec
-#plt.style.use('seaborn-dark-palette')
-#plt.style.use('ggplot')
+import numpy as np
+import scipy.stats as stats
+from scipy.signal import periodogram, butter, filtfilt
 from sklearn.neighbors import KernelDensity
-import os
-import warnings
-import importlib
-import seaborn as sns
-from bnqdflow import models, util #import models, util
-import BNQD
-importlib.reload(BNQD)
-#import PlottingToolbox as pt
-from SpectralMixture import SpectralMixture
 
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # Hide tensorflow warnings.
-warnings.simplefilter('ignore')
+# Gpflow & tensorflow
+import tensorflow as tf
+from tensorflow_probability import distributions as tfd
+import gpflow
+f64 = gpflow.utilities.to_default_float
+from gpflow.kernels import *
+
+# Files
+import csv
+import pandas as pd
+import seaborn as sns
+import wfdb
+from scipy.io import loadmat  # this is the SciPy module that loads mat-files
+
+# Local scripts
+#sys.path.insert(0, '/home/david/Documenten/Courses/Spectral Discontinuity Design/Thesis AI/Implementation/')
+from SpectralMixture import SpectralMixture, initialize_from_emp_spec
+from bnqdflow import models, base, effect_size_measures, util, analyses
 
 
 # """
