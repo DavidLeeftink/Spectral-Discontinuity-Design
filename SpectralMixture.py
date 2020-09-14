@@ -33,7 +33,7 @@ def SpectralMixture(Q, mixture_weights=None, frequencies=None, lengthscales=None
         print('lengthscales',lengthscales)
         mixture_weights = emp_mixture_weights
         frequencies = emp_frequencies
-        #pt.plot_freq_GMM(emp_mixture_weights, emp_frequencies, emp_lengthscales, "Empirical GMM fit using k-means", max_x = max(emp_frequencies))
+        
 
     else:
         if mixture_weights is None:
@@ -106,10 +106,10 @@ class SpectralMixtureComponent(Kernel):
         #self.lengthscale = gpflow.Parameter(lengthscale, transform=positive())
         
 
-        # Sum of Cosine priors 2 cosines
-#         #self.frequency.prior = tfd.Normal(f64(frequency), f64(10.))
-#         self.mixture_weight.prior = tfd.Gamma(f64(2.), f64(1.0))
-#         self.lengthscale.prior = tfd.Gamma(f64(2.), f64(.2))
+        # Sum of Cosine priors 2 cosines (the plots do not use priors currently.)
+        #self.frequency.prior = tfd.Normal(f64(frequency), f64(10.))
+        #self.mixture_weight.prior = tfd.Gamma(f64(2.), f64(1.0))
+        #self.lengthscale.prior = tfd.Gamma(f64(2.), f64(1.))
         
         # Sum of cosine priors 5 cosines
         # self.frequency.prior = tfd.Gamma(f64(2.0), f64(1.))
@@ -117,11 +117,7 @@ class SpectralMixtureComponent(Kernel):
         # self.lengthscale.prior = tfd.Gamma(f64(4.0 ), f64(.2))
 
         # heart rate priors
-#         self.frequency.prior = tfd.Uniform(f64(0.1), f64(194.))
-        #self.mixture_weight.prior = tfd.Gamma(f64(2.0), f64(.5))
         self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))
-
-        #self.lengthscale.prior = tfd.Uniform(f64(0.00001), f64(9999999.))
     
 
 

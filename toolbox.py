@@ -310,7 +310,11 @@ def plot_kernel_spectrum(Q, spectral_mixture, max_x=1.1, title=None, ax=None, co
                          two_pi=True, scalar=1.):
     """
     Plot the estimated spectral density for the Spectral Mixture kernel
-    :param spectral_mixture: spectra mixture kernel
+    :param spectral_mixture: spectral mixture kernel
+    :param max_x: X limit of the plot
+    :param title:
+    :param true_freqs: optional array of true frequencies that will be plotted with plt.axvline() 
+    :param two_pi: true if model frequencies are multiplied 2pi.
     """
     # Plot learned spectrum (currently excluding longterm trend)
     if ax is None:
@@ -323,8 +327,7 @@ def plot_kernel_spectrum(Q, spectral_mixture, max_x=1.1, title=None, ax=None, co
         else:
             means.append((spectral_mixture.kernels[i].frequency.numpy()) * scalar)
         variances.append(1 / np.sqrt(spectral_mixture.kernels[i].lengthscale.numpy() * (1 / scalar)))
-    # weights = np.log(weights)
-    # vars = np.log(vars)
+    # Plot Gaussian densities
     plot_freq_GMM(weights, means, variances, title=title, max_x=max_x, ax=ax, colours=colours, true_freqs=true_freqs)
 
 
@@ -363,7 +366,7 @@ def plot_freq_GMM(weights, means, variances, title=None, max_x=1.1, ax=None, col
     # ax.legend()
 
 
-def plot_model_spectra_new(a, Q, d, ax, index, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, scalar=1.0):
+def plot_model_spectra(a, Q, d, ax, index, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, scalar=1.0):
     # colour palettes
     greys = ['#393939', '#575757', '#707070', '#898989', '#a4a4a4', '#bfbfbf']
     blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
@@ -399,38 +402,6 @@ def plot_model_spectra_new(a, Q, d, ax, index, max_x=2.5, padding=0.0, true_freq
 #     fig.tight_layout()
 #     fig.subplots_adjust(top=0.9)
 
-def plot_model_spectra_old(a, Q, d, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, scalar=1.0):
-    # colour palettes
-    greys = ['#393939', '#575757', '#707070', '#898989', '#a4a4a4', '#bfbfbf']
-    blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
-    greens = ['#265e52', '#3c7e69', '#599d7e', '#79b895', '#9ed0ae', '#c6e5cc']
-
-    sns.set(style='ticks')
-    cm = a.continuous_model.model
-    dcm = a.discontinuous_model.control_model
-    dim = a.discontinuous_model.intervention_model
-
-    fig = plt.figure(constrained_layout=True, figsize=(12, 15))
-
-    # Continuous spectral GMM
-    gs = GridSpec(3, 1, figure=fig)
-    ax1 = fig.add_subplot(gs[0])
-    plot_kernel_spectrum(Q, cm.kernel, max_x, ax=ax1, colours=greys, title="Continuous spectral density",
-                         true_freqs=None, scalar=scalar)
-
-    # Discontinuous-control spectral GMM
-    ax2 = fig.add_subplot(gs[1])
-    plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax2, colours=blues, title="Control spectral density",
-                         true_freqs=true_freqs[0], scalar=scalar)
-
-    # Discontinuous-intervention spectral GMM
-    ax3 = fig.add_subplot(gs[2])
-    plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax3, colours=greens, title="Intervention spectral density",
-                         true_freqs=true_freqs[1], scalar=scalar)
-
-    fig.suptitle(f"$d$ = {d}", size=30)
-    fig.tight_layout()
-    fig.subplots_adjust(top=0.9)
 
 
 def plot_posterior_model_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, lineplot=False, scalar=1.0,
@@ -495,84 +466,3 @@ def plot_posterior_model_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None,
     fig.subplots_adjust(top=0.9)
 
 
-# def plot_synthetic_control_posterior_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, lineplot=False,
-#                                               scalar=1.0):
-#     """
-#     Plots a 4x4 subfigure, which covers the continuous fit on data, continuous GMM spectrum, discontinuous regression, and discontinuous GMM
-#     :arg
-#     a : BNQDflow analysis
-#     Q : number of components in Spectral Mixture Kernel
-#     cm : BNQDflow continuous model
-#     dcm : BNQDFlow discontinuous control model
-#     cim : BNQDflow discontinuous intervention model
-#     max_x: float - maximum range of x axis on spctral GMM plots.
-
-#     """
-#     dcm = a.discontinuous_model.control_model
-#     dim = a.discontinuous_model.intervention_model
-
-#     fig = plt.figure(constrained_layout=False, figsize=(24, 14))
-#     gs = GridSpec(8, 3, figure=fig)
-#     ax1 = fig.add_subplot(gs[:4, : -1])  # Synthetic control
-#     ax1.set_title('Counterfactual outcome', fontsize=30.0, x=0.75, y=1.02)
-#     ax2 = fig.add_subplot(gs[4:8, :-1])  # Discontinuous model fit
-#     ax2.set_title('Factual outcome', fontsize=30.0, x=0.75, y=1.02)
-#     ax3 = fig.add_subplot(gs[1:3, -1])  # Discontinuous-control spectral GMM
-#     ax4 = fig.add_subplot(gs[5:7, -1])  # Discontinuous-intervention spectral GMM
-#     # ax5 = fig.add_subplot(gs[2, :-1]) # Both at the same time
-
-#     # colour palettes
-#     blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
-#     greens = ['#265e52', '#3c7e69', '#599d7e', '#79b895', '#9ed0ae', '#c6e5cc']
-#     xx = np.linspace(-1.5, 1.5, 1000).reshape(1000, 1)
-#     X, Y = a.continuous_data
-#     xx = np.linspace(min(X), max(X), 1000).reshape(1000, 1)
-#     mean, var, samples = predict(dcm, xx, n_samples=20)
-#     x1, y1 = a.discontinuous_data[0][0], a.discontinuous_data[0][1]
-#     plot_prediction(x1, y1, xx, mean, var, ax=ax1, b=0., lineplot=lineplot)
-
-#     # Both at the same time
-#     # plot_prediction(x1, y1, xx, mean, var, ax=ax5, b=0.)
-#     # a.discontinuous_model.plot_regression(ax=ax5, n_samples=1000, num_f_samples=0, padding=padding, ylim=ylim)
-
-#     # Discontinuous model
-#     a.discontinuous_model.plot_regression(ax=ax2, n_samples=1000, num_f_samples=0, padding=padding, ylim=ylim,
-#                                           lineplot=lineplot)
-#     if true_freqs is not None:
-#         plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax3, title="Learned spectral density of the control group",
-#                              colours=blues,
-#                              true_freqs=true_freqs[0], scalar=scalar)
-#         plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax4, title="Learned spectral density of the intervention group",
-#                              colours=greens, true_freqs=true_freqs[1], scalar=scalar)
-#     else:
-#         plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax3, title="Control spectral density", colours=blues,
-#                              scalar=scalar)
-#         plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax4, title="Intervention spectral density", colours=greens,
-#                              scalar=scalar)
-#     fig.tight_layout()
-#     fig.subplots_adjust(top=0.9)
-#     # dcm = a.discontinuous_model.control_model
-#     # dim = a.discontinuous_model.intervention_model
-#     #
-#     # fig = plt.figure(constrained_layout=False, figsize=(24, 8))
-#     # gs = GridSpec(2, 3, figure=fig)
-#     # ax1 = fig.add_subplot(gs[:2, :-1])  # Discontinuous model fit
-#     # ax1.set_title('Discontinuous model', fontsize=35.0, x=0.75, y=1.02)
-#     # ax2 = fig.add_subplot(gs[0, -1])  # Discontinuous-control spectral GMM
-#     # ax3 = fig.add_subplot(gs[1, -1])  # Discontinuous-intervention spectral GMM
-#     #
-#     # # colour palettes
-#     # blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
-#     # greens = ['#265e52', '#3c7e69', '#599d7e', '#79b895', '#9ed0ae', '#c6e5cc']
-#     #
-#     # a.discontinuous_model.plot_regression(ax=ax1, n_samples=1000, num_f_samples=0, padding=padding, ylim=ylim)
-#     # if true_freqs is not None:
-#     #     plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax2, title="Learned spectrogram of the control group", colours=blues,
-#     #                          true_freqs=true_freqs[0])
-#     #     plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax3, title="Learned spectrogram of the intervention group", colours=greens,
-#     #                      true_freqs=true_freqs[1])
-#     # else:
-#     #     plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax2, title="Control Spectral GMM", colours=blues)
-#     #     plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax3, title="Intervention Spectral GMM", colours=greens)
-#     # fig.tight_layout()
-#     # fig.subplots_adjust(top=0.9)
