@@ -1,0 +1,235 @@
+<!--#set var="TITLE" value="Post-Ictal Heart Rate Oscillations in Partial Epilepsy"-->
+<!--#include virtual="/head.shtml"-->
+
+
+<p>
+IC Al-Aweel, B.S., KB Krishnamurthy, M.D., JM Hausdorff, Ph.D., JE Mietus, B.S.,
+JR Ives, B.Sc., AS Blum, M.D., Ph.D., DL Schomer, M.D., AL Goldberger, M.D.
+
+<p>
+Departments of Neurology and Medicine, Beth Israel Deaconess Medical Center,
+Harvard Medical School, Boston, Massachusetts 02215
+
+<p>
+<center><table bgcolor="lightblue">
+<tr><td>
+This article originally appeared in <i>Neurology</i> <b>53</b>(7):1590-1592,
+1999 (October 22).  Please cite this publication when referencing this
+material.  The data on which this article is based may be found <a
+href="/physiobank/database/szdb/">here</a>.
+</td></tr>
+</table></center>
+
+
+<h2>Abstract</h2>
+
+<p>
+We report post-ictal heart rate oscillations in a heterogeneous group of
+patients with partial epilepsy.  This pattern is marked by the appearance of
+transient but prominent low-frequency heart rate oscillations (0.01 - 0.1 Hz)
+immediately following five of 11 seizures recorded in five patients.  This
+finding may be a marker of neuroautonomic instability, and, therefore, may have
+implications for understanding perturbations of heart rate control associated
+with partial seizures.
+
+<h2>Introduction</h2>
+
+<p>
+Seizures may be associated with cardiac arrhythmias [1], prominent arterial
+oxygen desaturations [2], and sudden death [3].  In the course of analyzing
+cardiac dynamics in patients with partial epilepsy, we noted transient but
+prominent low-frequency heart rate oscillations immediately following seizures
+in some patients.  We describe the features of this pattern that may have
+implications for understanding cardiac and neuroautonomic instability in
+epilepsy.
+
+<h2>Subjects and Methods</h2>
+
+<p>
+This preliminary report is based upon analysis of data from 11 partial seizures
+recorded in five women patients during continuous electroencephalographic
+(EEG)/electrocardiographic (ECG)/video monitoring [2].  The patients ranged in
+age from 31 to 48 years old, were without clinical evidence of cardiac
+disease, and had partial seizures with or without secondary generalization
+from frontal or temporal foci.  Recordings were made under a protocol approved
+by Beth Israel Deaconess Medical Center's Committee on Clinical
+Investigations.
+
+<p>
+Data were analyzed off-line using customized software.  Onset and offset of
+seizures were visually identified to the nearest 0.1 second by an experienced
+electroencephalographer (DLS) blinded with respect to the heart rate
+variability analysis.  Continuous single-lead ECG signals were sampled at 200
+Hz.  From the digitized ECG recording, a heartbeat annotation file (a list of
+the type and time of occurrence of each heartbeat) was obtained using a version
+of our commercially available arrhythmia analysis software [4].  To remove
+higher order nonstationary fluctuations in heart rate that could mask
+low-frequency oscillations, the time series were detrended using a least
+squares fitted 4th degree polynomial.  Power spectral density estimates were
+then calculated using standard fast Fourier transform techniques with a
+rectangular window [5].
+
+
+<h2>Results</h2>
+
+<p>
+Five patients had a total of 11 recorded seizures, lasting from 15-110 seconds.
+(Two of the subjects had multiple recorded seizures.)  Low-frequency post-ictal
+heart rate oscillations, two to six minutes in duration, were observed on one
+occasion in each of the five patients.  Examples are shown in Figures 1-3.
+These oscillations had a well-defined spectral peak in the 0.01 to 0.10 Hz
+frequency band.  Te peak-to-trough amplitude of these oscillations ranged from
+15 to 41 beats per minute (bpm).  The oscillations were not observed in the
+pre-ictal period for these seizures.  The increase in heart rate during the
+seizures ranged from 28 to 88 bpm for the events with post-ictal oscillations
+(n=5), and 3 to 68 bpm for those seizures without the oscillations (n=6).  Two
+of the five seizures with post-ictal oscillations were associated with
+secondary generalization, the remaining three were complex partial.  Patients
+with and without oscillations were either asleep (Stage II or III) or resting
+quietly before the seizures.
+
+
+<h2>Discussion</h2>
+
+<p>
+Two features of the post-ictal cardiac oscillation (PICO) pattern described
+here are notable.  First, these oscillations are clearly distinct from the
+higher frequency (usually 0.2 - 0.4 Hz), physiologic oscillations associated
+with breathing (respiratory sinus arrhythmia).  Second, these post-ictal
+oscillations may be of extremely high amplitude (up to 40 bpm from
+peak-to-trough) (Figs. 1-3), further distinguishing them from very short-term
+physiologic changes associated with activity or posture.
+
+<p>
+The mechanism underlying these fluctuations in heart rate remains to be
+determined.  The transient post-ictal dynamics differ from the relatively
+low-frequency, but typically more sustained oscillations in heart rate that
+have been reported in a number of settings associated with cardiopulmonary
+instability, including congestive heart failure and sudden cardiac death
+syndromes [6] (0.015 - 0.025 Hz), obstructive sleep apnea [7] (0.017 - 0.035
+Hz), and high altitude exposure [8] (0.04 - 0.06 Hz).  Whether the PICO
+phenomenon is mechanistically related to transient Mayer-like waves [9] (0.07 -
+0.09 Hz), such as those seen with orthostatic challenge or related stressors is
+uncertain.  The prominent increase in heart rate that occurred during the
+seizures prior to the oscillations suggests a possible role for sympathetic
+activation.  The accompanying decrease in vagally-mediated, higher frequency
+oscillations, evident in some of the cases (Figs. 1 and 3), supports the notion
+of sympathetic activation and concomitant decreased vagal tone [10].  This type
+of ``ringing'' effect, regardless of mechanism, may be important because of its
+possible association with unstable cardiopulmonary dynamics.  None of the
+subjects in the small, heterogeneous group reported here exhibited cardiac
+arrhythmias.  However, to the extent that such heart rate oscillations may be a
+marker of profound fluctuations in ionic or neuroautonomic variables, such
+alterations could be arrhythmogenic in susceptible individuals [6].  Further
+prospective study is warranted to determine the prevalence of these
+oscillations in specific epilepsy syndromes, to study their possible relation
+to systemic blood pressure and respiratory dynamics, and to define their
+mechanism and clinical significance.
+
+<h2>Figure Legends</h2>
+
+<p><em>[Sorry, the figures are not currently available.]</em>
+
+<p>
+<em>Figure 1:</em> Example of post-ictal heart rate oscillations in a
+37-year-old woman with generalized tonic-clonic seizures originating from the
+right temporal region.  For this and the other figures, the top panel shows a
+continuous sinus rhythm heart rate time series.  Bottom panels show the Fourier
+spectra of selected portions of data pre- and post-seizure.  The pre-seizure
+spectrum shows a broad low-frequency peak (< 0.05 Hz), and a higher peak at
+about 0.3 Hz, which is consistent with physiologic respiratory sinus
+arrhythmia.  Immediately after the seizure, the heart rate increases and then
+falls below the pre-seizure values, followed by a secondary increase, after
+which the prominent low-frequency oscillations occur.  The post-seizure
+spectrum shows a large, sharp spectral peak at about 0.03 Hz, with a decrease
+in the amplitude of the higher frequency peak compared to pre-seizure.
+
+<p>
+<em>Figure 2:</em> Example of post-ictal heart rate oscillations in a
+48-year-old woman with partial epilepsy, with the seizure originating from the
+right frontal temporal region.  Prior to the seizure, there are relatively
+high-frequency heart rate oscillations consistent with respiratory sinus
+arrhythmia at about 0.3 Hz.  During the seizure, heart rate increases markedly.
+Following the seizure, transient prominent oscillations at about 0.13 Hz are
+noted.
+
+<p>
+<em>Figure 3:</em> Example of post-ictal heart rate oscillations in a
+46-year-old woman with partial epilepsy, with the seizure originating from the
+left perisylvian region.  Before the seizure, the heart rate fluctuates in a
+complex manner, with a broad low-frequency peak, and a high-frequency peak at
+0.3 Hz corresponding to respiration.  A transient increase in heart rate occurs
+during the seizure, followed by the appearance of low-frequency oscillations
+with a sharp spectral peak at about 0.07 Hz and a decrease in higher frequency
+power compared to pre-seizure.
+
+
+<h2>References</h2>
+
+<ol>
+<li> Galimberti CA, Marchioni E, Barzizza F, Manni R, Sartori I, Tartara A.
+Partial epileptic seizures of different origin variably affect cardiac rhythm.
+<em>Epilepsia</em> 1996;<b>37</b>:742-747.
+
+<li> Ives JR, Mainwaring NR, Krishnamurthy KB, et al.  Technical implementation
+and clinical findings/results of monitoring oxygen saturation in patients
+referred for long-term EEG monitoring.  <em>Electroencephalogr Clin Neurophysiol</em>
+1996;<b>99</b>:432-439.
+
+<li> Natelson BH, Suarez RV, Terrence CF, Turizo R.  Patients with epilepsy who
+die suddenly have cardiac disease.  <em>Arch Neurol</em> 1998;<b>55</b>:857-860.
+
+<li> Moody GB, Peng CK, et al.  Predicting survival in heart failure case and
+control subjects by use of fully automated methods for deriving nonlinear and
+conventional indices of heart rate dynamics.  <em>Circulation</em>
+1997;<b>96</b>:842-848.
+
+<li> Press WH, Flannery BP, Teukolsky SA, Vetterling WT.  <em>Numerical Recipes</em>.
+Cambridge, England: Cambridge University Press, 1987.
+
+<li> Goldberger AL, Rigney DR, Mietus J, Antman EM, Greenwald S.  Nonlinear
+dynamics in sudden cardiac death syndrome: heart rate oscillations and
+bifurcations.  <em>Experientia</em> 1988;<b>44</b>:983-987.
+
+<li> Guilleminault C, Connolly S, Windle R, Melvin K, Tilkian A.  Cyclical
+variation of the heart rate in sleep apnoea syndrome.  Mechanisms and
+usefulness of 24-hour electrocardiography as a screening technique.  <em>Lancet</em>
+1984;<b>1</b>:126-131.
+
+<li> Lipsitz LA, Hashimoto F, Lubowsky LP, et al.  Heart rate and respiratory
+rhythm dynamics on ascent to high altitude.  <em>Br Heart J</em>
+1995;<b>74</b>:390-396.
+
+<li> Jarisch WF, Ferguson JJ, Shannon RP, Wei JY, Goldberger AL.  Age-related
+disappearance of Mayer-like heart rate waves.  <em>Experientia</em>
+1987;<b>43</b>:1207-1209.
+
+<li> Task Force of the European Society of Cardiology and the North American
+Society of Pacing and Electrophysiology.  (Marek Malik, writing chairman.)
+Heart rate variability: standards of measurement, physiological
+interpretation, and clinical use.  <em>Circulation</em> 1996;<b>93</b>:1043-1065.
+
+</ol>
+
+<p><font size=-1>
+This study was supported by grants from the National Aeronautics and Space
+Administration, Washington, DC; The G. Harold and Leila Y. Mathers Charitable
+Foundation, Mt. Kisco, New York; and the National Institute on Aging, Bethesda,
+MD</font>
+
+<p>
+Please address correspondence to:
+
+<p><font size=-1>
+Ary L. Goldberger, M.D.<br>
+Cardiovascular Division, GZ-435<br>
+Beth Israel Deaconess Medical Center<br>
+330 Brookline Avenue<br>
+Boston, MA 02215<br>
+Phone:  617-667-4267<br>
+Fax:  617-667-7268<br>
+</font>
+
+<!--#include virtual="/footer.shtml"-->
+</body>
+</html>
