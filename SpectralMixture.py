@@ -100,11 +100,10 @@ class SpectralMixtureComponent(Kernel):
             return logistic
         logistic = logit_transform(0.000001, 100000) # numerical stability
         truncated_frequency = logit_transform(0.000001, 250) # (0, nyquist) (0,100/3)
+        
         self.mixture_weight = gpflow.Parameter(mixture_weight, transform=logistic)
         self.frequency = gpflow.Parameter(frequency, transform=truncated_frequency)
-        self.lengthscale = gpflow.Parameter(lengthscale, transform=logistic)
-        #self.lengthscale = gpflow.Parameter(lengthscale, transform=positive())
-        
+        self.lengthscale = gpflow.Parameter(lengthscale, transform=logistic)        
 
         # Sum of Cosine priors 2 cosines (the plots do not use priors currently.)
         #self.frequency.prior = tfd.Normal(f64(frequency), f64(10.))
@@ -117,7 +116,7 @@ class SpectralMixtureComponent(Kernel):
         # self.lengthscale.prior = tfd.Gamma(f64(4.0 ), f64(.2))
 
         # heart rate priors
-        self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))
+        #self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))
     
 
 
