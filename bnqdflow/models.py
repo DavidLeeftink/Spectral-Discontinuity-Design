@@ -243,7 +243,7 @@ class GPMContainer(Module):
             N = sum(map(lambda data: len(data[0]), self.data_list))
             BIC = L - (k / 2) * np.log(N)            
             print(f'L: {L}, k: {k}, N: {N}')
-
+            print(f'BIC: {BIC}')
             return BIC
 
         elif method in ["native", "nat", "gpflow"]:
@@ -473,7 +473,7 @@ class GPMContainer(Module):
             # Number of x-samples in the section.
             # Incremented by one to account for integer conversion and the overlapping of bounds between sections.
             section_samples = int(n_samples * section_ratio + 1)
-            x_samples_list.append(np.linspace(left_bound, right_bound, section_samples))
+            x_samples_list.append(np.linspace(left_bound, separations[-1], section_samples))
 
         # Which prediction function to use. Depends on the value of predict_y.
         predict = self.predict_y if predict_y else self.predict_f
@@ -502,9 +502,11 @@ class GPMContainer(Module):
             # Only if num_f_samples > 0 and the latent function is plotted instead of
             # the prediction of held-out data points
             f_samples_list = self.predict_f_samples(x_samples_list, num_f_samples)
+            i = 0
             for f_samples, x_samples in zip(f_samples_list, x_samples_list):
                 for f_sample in f_samples:
-                    ax.plot(x_samples, f_sample[:, 0], linewidth=0.2, c='grey')
+                    ax.plot(x_samples, f_sample[:, 0], linewidth=0.25, c=used_cols[i])
+                i += 1
 
 
     def _ensure_same_params(self, params: List[str]) -> None:

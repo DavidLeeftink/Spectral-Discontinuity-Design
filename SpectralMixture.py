@@ -98,11 +98,11 @@ class SpectralMixtureComponent(Kernel):
             sigmoid = tfp.bijectors.Sigmoid()
             logistic = tfp.bijectors.Chain([affine,sigmoid])
             return logistic
-        logistic = logit_transform(0.000001, 100000) # numerical stability
-        truncated_frequency = logit_transform(0.000001, 250) # (0, nyquist) (0,100/3)
+        logistic = logit_transform(0.0001, 100000) # numerical stability
+        #truncated_frequency = logit_transform(0.0001, 350) # transform to limit the frequencies at the nyquist frequency
         
         self.mixture_weight = gpflow.Parameter(mixture_weight, transform=logistic)
-        self.frequency = gpflow.Parameter(frequency, transform=truncated_frequency)
+        self.frequency = gpflow.Parameter(frequency, transform=logistic)
         self.lengthscale = gpflow.Parameter(lengthscale, transform=logistic)        
 
         # Sum of Cosine priors 2 cosines (the plots do not use priors currently.)
@@ -116,7 +116,10 @@ class SpectralMixtureComponent(Kernel):
         # self.lengthscale.prior = tfd.Gamma(f64(4.0 ), f64(.2))
 
         # heart rate priors
-        #self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))
+        
+        self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))
+#         self.mixture_weight.prior = tfd.Gamma(f64(1.0), f64(1.0))
+        
     
 
 
@@ -135,7 +138,7 @@ class SpectralMixtureComponent(Kernel):
         r = tf.reduce_sum( freq * (f - f2), 2)
         cos_term = tf.cos(r)
 
-        return self.mixture_weight * exp_term * cos_term 
+        return self.mixture_weight * exp_term * cos_term #* 2 * np.pi
 
     def K_diag(self, X):
         return tf.fill(tf.shape(X)[:-1], tf.squeeze(self.mixture_weight))
