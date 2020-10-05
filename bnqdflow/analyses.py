@@ -106,6 +106,7 @@ class SimpleAnalysis(Analysis):
             self.__regression_object = regression_object
 
         self.summary_object = None
+        self.init_models()
 
     def init_models(self, labeler: Union[List[InputData], Callable[[InputData], int]] = None) -> None:
         """
@@ -153,7 +154,7 @@ class SimpleAnalysis(Analysis):
                 regression_object = util.copy_kernel(self.__regression_object)
             else:
                 regression_object = gf.utilities.deepcopy(self.__regression_object)
-
+            regression_object     = self.__regression_object
             self.continuous_model = ContinuousModel(regression_object, self.continuous_data)
         else:
             # If it already exists, checks if the data the model uses is the same as the data in the analysis object
@@ -169,9 +170,8 @@ class SimpleAnalysis(Analysis):
                 regression_object = util.copy_kernel(self.__regression_object)
             else:
                 regression_object = gf.utilities.deepcopy(self.__regression_object)
-
-            self.discontinuous_model = DiscontinuousModel(regression_object, self.discontinuous_data,
-                                                          self.intervention_point, self.share_params)
+            
+            self.discontinuous_model = DiscontinuousModel(regression_object,self.discontinuous_data, self.intervention_point, self.share_params)
         else:
             # If it already exists, checks if the data the model uses is the same as the data in the analysis object
             if not (self.discontinuous_model.data == self.discontinuous_data):

@@ -226,7 +226,7 @@ class GPMContainer(Module):
         """
         return tf.reduce_sum(list(map(lambda m: m.maximum_log_likelihood_objective(*args, **kwargs), self.models)),
                              0)
-
+    @tf.autograph.experimental.do_not_convert
     def log_posterior_density(self, method="bic", *args, **kwargs) -> Tensor:
         """
         Combined log marginal likelihood of the contained models over their respective data.
@@ -242,8 +242,8 @@ class GPMContainer(Module):
             L = self.maximum_log_likelihood_objective()
             N = sum(map(lambda data: len(data[0]), self.data_list))
             BIC = L - (k / 2) * np.log(N)            
-            print(f'L: {L}, k: {k}, N: {N}')
-            print(f'BIC: {BIC}')
+#             print(f'L: {L}, k: {k}, N: {N}')
+#             print(f'BIC: {BIC}')
             return BIC
 
         elif method in ["native", "nat", "gpflow"]:
@@ -252,7 +252,7 @@ class GPMContainer(Module):
         else:
             raise ValueError(f"Incorrect method for log marginal likelihood calculation: {method}. "
                              "Please use either 'bic' or 'native' (i.e. gpflow method)")
-
+    @tf.autograph.experimental.do_not_convert
     def _training_loss(self, *args, **kwargs) -> Tensor:
         """
         Function that the optimizer aims to minimize.
@@ -480,7 +480,15 @@ class GPMContainer(Module):
 
         # Predicts the means and variances for both x_samples
         means_and_vars = predict(x_samples_list)
-
+        means, variances = means_and_vars
+        control_mean, control_std = means
+        mean_disc = np.array([control_mean.numpy(), control_std.numpy()])
+        np.save('meanvar_control_discontinuous', mean_disc)
+        
+        intervention_mean, intervention_std = variances
+        intervention_disc = np.array([intervention_mean.numpy(), intervention_std.numpy()])
+        np.save('meanvar_intervention_discontinuous', intervention_disc)
+        
         # Ensures only a single label occurs in the pyplot legend
         labeled = False
         # discontinuousmodelcolor
@@ -490,8 +498,8 @@ class GPMContainer(Module):
             # Plots the 95% confidence interval
             col = used_cols[i_col]
             i_col += 1
-            ax.fill_between(x_samples, mean[:, 0] - 1.96 * np.sqrt(var[:, 0]),
-                             mean[:, 0] + 1.96 * np.sqrt(var[:, 0]), color=col, alpha=0.2)
+            ax.fill_between(x_samples, mean[:, 0] - 2. * np.sqrt(var[:, 0]),
+                             mean[:, 0] + 2. * np.sqrt(var[:, 0]), color=col, alpha=0.2)
 
             # Plots the mean function predicted by the GP
             ax.plot(x_samples, mean[:, 0], c=col, label=('$M_D$' if not labeled else ""))
@@ -502,11 +510,14 @@ class GPMContainer(Module):
             # Only if num_f_samples > 0 and the latent function is plotted instead of
             # the prediction of held-out data points
             f_samples_list = self.predict_f_samples(x_samples_list, num_f_samples)
+            #np.save('functionsamples',f_samples_list)
             i = 0
             for f_samples, x_samples in zip(f_samples_list, x_samples_list):
                 for f_sample in f_samples:
                     ax.plot(x_samples, f_sample[:, 0], linewidth=0.25, c=used_cols[i])
                 i += 1
+            return f_samples_list
+         
 
 
     def _ensure_same_params(self, params: List[str]) -> None:
@@ -657,7 +668,8 @@ class ContinuousModel(GPMContainer):
         x_range = max_x - min_x
         min_x, max_x = (min_x - (x_range * padding[0]), max_x + (x_range * padding[1]))
         ax.set_xlim(min_x,max_x)
-
+        
+        
         x_samples = np.linspace(min_x, max_x, n_samples)
 
         # Which prediction function to use. Depends on the value of predict_y.
@@ -665,10 +677,15 @@ class ContinuousModel(GPMContainer):
 
         # Predicts the means and variances for both x_samples
         mean, var = predict(x_samples)
+ 
+        mean_cont = mean.numpy()
+        var_cont = var.numpy()
+        continuous = np.array([mean_cont, var_cont])
+        np.save('meanvar_continuous', continuous)
 
         # Plots the 95% confidence interval
-        ax.fill_between(x_samples, mean[:, 0] - 1.96 * np.sqrt(var[:, 0]),
-                         mean[:, 0] + 1.96 * np.sqrt(var[:, 0]), color=col, alpha=0.2)
+        ax.fill_between(x_samples, mean[:, 0] - 2. * np.sqrt(var[:, 0]),
+                         mean[:, 0] + 2. * np.sqrt(var[:, 0]), color=col, alpha=0.2)
 
         # Plots the mean function predicted by the GP
         ax.plot(x_samples, mean[:, 0], c=col, label='$M_C$')
@@ -690,6 +707,7 @@ class DiscontinuousModel(GPMContainer):
     def __init__(
             self,
             model_or_kernel: Union[GPModel, Kernel],
+
             data: Optional[List[RegressionData]],
             intervention_point: Tensor,
             share_params: Optional[bool] = True

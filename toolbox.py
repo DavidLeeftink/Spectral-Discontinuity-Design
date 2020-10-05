@@ -35,7 +35,7 @@ from scipy.io import loadmat  # this is the SciPy module that loads mat-files
 
 # Local scripts
 #sys.path.insert(0, '/home/david/Documenten/Courses/Spectral Discontinuity Design/Thesis AI/Implementation/')
-from SpectralMixture import SpectralMixture, initialize_from_emp_spec
+from SpectralMixture import SpectralMixture, initialize_from_emp_spec, SpectralMixtureComponent
 from bnqdflow import models, base, effect_size_measures, util, analyses
 
 
@@ -44,38 +44,45 @@ from bnqdflow import models, base, effect_size_measures, util, analyses
 # - Plot of data & noisy observations taken from BNQD:
 # """
 
-def find_optimal_Q(X, Y,min_Q=1, max_Q=10, max_freq=1.0, max_length=1.0, additional_kernel=None, plot_BIC_scores=True):
-    BIC_scores = np.zeros((max_Q-min_Q))
+def find_optimal_Q(x, y, data, min_Q, max_Q, fs=1., added_kernel = None, plot_BIC=True):
+    """
+    Determine the optimal number of spectral components according to the Bayesain Information Criterion
+    BIC = log likelihood - k/2 * log(n)
+    
+    :param x:  NumpPy array (n,) input x values
+    :param y:  NumPy array (n,) data y values
+    :param data: GPRegression datatype.
+    :param Qs: range of values for which a SM kernel will be intialized with Q components
+    :param fs: sampling rate
+    :plot_BIC: Bool: plots the BIC scores if true
+    
+    return number of components Q that 
+    """
+    Qs= np.arange(min_Q, max_Q)
+    BIC = np.zeros((Qs.shape[0]))
+            
+    for i, q in enumerate(Qs):
+        sm     = SpectralMixture(q, x=x.flatten(),y=y.flatten(),fs=fs)
+        for k in sm.kernels:
+            if isinstance(k, SpectralMixtureComponent):
+                k.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))         
+                k.mixture_weight.prior = tfd.Gamma(f64(2.), f64(1.))
 
-    for q in range(min_Q, max_Q):
-        # Fit sm kernel
-        if additional_kernel is not None:
-            sm = SpectralMixture(Q=q, max_freq=max_freq, max_length=max_length) + additional_kernel
-        else:
-            sm = SpectralMixture(Q=q, max_freq=max_freq, max_length=max_length)
-
-
-        m = models.ContinuousModel(sm, (util.ensure_tf_matrix(X),util.ensure_tf_matrix(Y)))
-        m.train(verbose=False)
-        log_marginal_likelihood = m.log_posterior_density("bic").numpy()
-
-        #m = train_exact_model(X, Y, kernel=sm, optim=gpflow.optimizers.Scipy(), max_iter=2000, verbal=False)
-        #plot_kernel_spectrum(q, sm, max_x = 1.5)
-
-        # Compute BIC
-        #BIC_scores[q-min_Q] = np.log(X.shape[0]) * (q*3+1) - 2*log_marginal_likelihood
-        BIC_scores[q-min_Q] = log_marginal_likelihood
-        print(f'Q: {q}',np.round(log_marginal_likelihood,3), 'BIC: ',np.round(BIC_scores[q-min_Q] ,3) )
-
-    if plot_BIC_scores:
+        if added_kernel is not None:
+            sm += added_kernel
+                
+#         model  = models.ContinuousModel(sm, (util.ensure_tf_matrix(x),util.ensure_tf_matrix(y)))
+        model  = models.ContinuousModel(sm, data)
+        model.train(verbose=False)
+        BIC[i] = model.log_posterior_density("bic").numpy()
+ 
+    if plot_BIC:
         fig = plt.figure()
-        plt.plot(np.arange(min_Q, max_Q), BIC_scores, label='BIC score')
+        plt.plot(Qs, BIC)
         plt.xlabel('Number of Spectral Mixture components (Q)')
-        plt.ylabel('BIC')
-        plt.legend()
         plt.show()
 
-    return np.argmin(BIC_scores) + min_Q
+    return np.argmax(BIC) + min_Q 
 
 def BIC_scores(X, Y,min_Q=1, max_Q=10, max_freq=1.0, max_length=1.0):
     BIC_scores = np.zeros((max_Q-min_Q))
@@ -92,18 +99,19 @@ def BIC_scores(X, Y,min_Q=1, max_Q=10, max_freq=1.0, max_length=1.0):
 
     return BIC_scores
 
-def gaussian_density(x, weight, var, mean):
+def gaussian_density(x, weight, var, mean, log=True):
     """
     Gaussian probability density
     :param weight:
-    :param sigma: standard deviation
+    :param var: variance, sigma^2
     :param mean:
     :return: 1/sqrt(2 pi var) * exp{-(x-mu)^2/2}
     """
 
     exp_term = np.exp(- (np.power ((x - mean)/var, 2.) /2))
     normalization_term = 1 / ( np.sqrt(2.*np.pi*var))
-    return weight * exp_term * normalization_term
+    log_gaussian = -np.log(np.sqrt(np.pi)) - np.log(var) - (x-mean)**2 / (2*var)
+    return weight * exp_term * normalization_term, log_gaussian
 
 
 #---------------------------
@@ -254,65 +262,66 @@ def sinc_mean_function(x):
 
 def triple_trigonometry(x, d=0):
     """
-    f(x) = sin(5x) + cos(15x) + sin(30x)
+    f(x) = sin(5x) + cos(17x) + sin(28x)
     :arg d: order of discontinuity
     """
-    return (np.cos(5*x) +np.cos(13*x) + np.cos(21*x)+ np.cos(28*x) + np.cos(36*x))*(x<=0) + (np.cos(5*x+d) +np.cos(13*x+d) + np.cos(21*x+d)+ np.cos(28*x+d) + np.cos(36*x+d))*(x>0)
+    return (np.cos(5*x) +np.cos(17*x) + np.cos(28*x))*(x<=0) + (np.cos((5+d)*x) +np.cos((17+d)*x) + np.cos((28+d)*x))*(x>0)
 
 
 #---------------------------
 # Plotting functionality
 #---------------------------
 
-def plot_prediction(X, Y, xx, mean, var, samples=None, ax=None, name=None, b=None, mu = None, ylim=None, lineplot=False):
-    """
-    Standard time series plot of the observations and the model fit.
-    :param X: observation X-values
-    :param Y: obsrvation Y-values
-    :param xx: NumPy linspace object for predictions
-    :param mean: posterior model mean
-    :param var: posterior model variance
-    """
-    if ax == None:
-        ax = plt.gca()
-    if name == None:
-        name = "undefined"
+# def plot_prediction(X, Y, xx, mean, var, samples=None, ax=None, name=None, b=None, mu = None, ylim=None, lineplot=False):
+#     """
+#     Standard time series plot of the observations and the model fit.
+#     :param X: observation X-values
+#     :param Y: obsrvation Y-values
+#     :param xx: NumPy linspace object for predictions
+#     :param mean: posterior model mean
+#     :param var: posterior model variance
+#     """
+#     if ax == None:
+#         ax = plt.gca()
+#     if name == None:
+#         name = "undefined"
 
-    if lineplot:
-        ax.plot(X,Y,color='black')
-    else:
-        ax.plot(X, Y, 'kx',mew=2,label='Observations')
-    ax.plot(xx, mean, 'C0',linewidth=2.0,label='Posterior mean')
-    ax.fill_between(xx[:, 0],
-                    mean[:, 0] - 1.96 * np.sqrt(var[:, 0]),
-                    mean[:, 0] + 1.96 * np.sqrt(var[:, 0]),
-                    color='C0', alpha=0.15)#'C0'
+#     if lineplot:
+#         ax.plot(X,Y,color='black')
+#     else:
+#         ax.plot(X, Y, 'kx',mew=2,label='Observations')
+#     ax.plot(xx, mean, 'C0',linewidth=2.0,label='Posterior mean')
+#     ax.fill_between(xx[:, 0],
+#                     mean[:, 0] - 1.96 * np.sqrt(var[:, 0]),
+#                     mean[:, 0] + 1.96 * np.sqrt(var[:, 0]),
+#                     color='C0', alpha=0.15)#'C0'
 
-    ax.xaxis.set_major_locator(LinearLocator(4))
-    ax.yaxis.set_major_locator(LinearLocator(2))
-    ax.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-    ax.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-    ax.set_title("Posterior of " + name + " kernel", fontsize=25)
-    ax.set_ylim(-3,3)
-    if samples is not None:
-        ax.plot(xx, samples[:, :, 0].numpy().T, 'C0', linewidth=.5)
-    if mu is not None:
-        ax.plot(xx, mu, label='True function', linewidth=2.0, color='black')
-    if b is not None:
-        ax.axvline(x=b, color='black', linestyle=':')
-    ax.legend(loc='upper right')
+#     ax.xaxis.set_major_locator(LinearLocator(4))
+#     ax.yaxis.set_major_locator(LinearLocator(2))
+#     ax.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+#     ax.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+#     ax.set_title("Posterior of " + name + " kernel", fontsize=25)
+#     ax.set_ylim(-3,3)
+#     if samples is not None:
+#         ax.plot(xx, samples[:, :, 0].numpy().T, 'C0', linewidth=.5)
+#     if mu is not None:
+#         ax.plot(xx, mu, label='True function', linewidth=2.0, color='black')
+#     if b is not None:
+#         ax.axvline(x=b, color='black', linestyle=':')
+#     ax.legend(loc='upper right')
 
-    #ax.set_title("Posterior prediction using the " + name + " kernel")
-    if ylim != None:
-        ax.set_ylim(ylim[0], ylim[1])
+#     #ax.set_title("Posterior prediction using the " + name + " kernel")
+#     if ylim != None:
+#         ax.set_ylim(ylim[0], ylim[1])
 
-def plot_kernel_spectrum(Q, spectral_mixture, max_x=1.1, title=None, ax=None, colours=None, true_freqs=None,
+def plot_kernel_spectrum(spectral_mixture, max_x=1.1, title=None, ax=None, colours=None, true_freqs=None,
                          two_pi=False, scalar=1.):
     """
     Plot the estimated spectral density for the Spectral Mixture kernel
     :param spectral_mixture: spectra mixture kernel
     """
-    # Plot learned spectrum (currently excluding longterm trend)
+    Q = np.sum([isinstance(kernel, SpectralMixtureComponent) for kernel in spectral_mixture.kernels])
+    
     if ax is None:
         ax = plt.gca()
     weights, means, variances = [], [], []
@@ -323,14 +332,14 @@ def plot_kernel_spectrum(Q, spectral_mixture, max_x=1.1, title=None, ax=None, co
         else:
             means.append((spectral_mixture.kernels[i].frequency.numpy()) * scalar )
             
-        variances.append(1 / np.sqrt(spectral_mixture.kernels[i].lengthscale.numpy() * (1 / scalar)))
+        variances.append(1 / np.sqrt(spectral_mixture.kernels[i].lengthscale.numpy() ))#* (1 / scalar)
 #         print('Trained value lengthscale ', spectral_mixture.kernels[i].lengthscale.numpy())
 #         print('Scaled value', np.sqrt(spectral_mixture.kernels[i].lengthscale.numpy() * (1/scalar)))
 #         print('final variance: ', 1 / np.sqrt(spectral_mixture.kernels[i].lengthscale.numpy() * (1/scalar)))
     # weights = np.log(weights)
     # vars = np.log(vars)
-    plot_freq_GMM(weights, means, variances, title=title, max_x=max_x, ax=ax, colours=colours, true_freqs=true_freqs)
-
+    pdfs = plot_freq_GMM(weights, means, variances, title=title, max_x=max_x, ax=ax, colours=colours, true_freqs=true_freqs)
+    return pdfs
 
 def plot_freq_GMM(weights, means, variances, title=None, max_x=1.1, ax=None, colours=None, true_freqs=None):
     if ax is None:
@@ -338,8 +347,10 @@ def plot_freq_GMM(weights, means, variances, title=None, max_x=1.1, ax=None, col
     x = np.linspace(0, max_x, int(max_x * 1000)).reshape(int(max_x * 1000), 1)
 
     max_val = 0
+    pdfs = []
     for i in range(len(weights)):
-        pdf = gaussian_density(x, weights[i], variances[i], means[i])
+        pdf, log_pdf = gaussian_density(x, weights[i], variances[i], means[i])
+        pdfs.append(pdf)
         if max(pdf) > max_val:
             max_val = max(pdf)
         if colours is not None:
@@ -354,7 +365,6 @@ def plot_freq_GMM(weights, means, variances, title=None, max_x=1.1, ax=None, col
             if i is 0:
                 ax.axvline(x=freq, color='black', linestyle=':', label='True frequencies')
             else:
-                print('else case: ', i)
                 ax.axvline(x=freq, color='black', linestyle=':')
 
     ax.set_xlabel("Frequency")  # , fontsize=16)
@@ -363,11 +373,14 @@ def plot_freq_GMM(weights, means, variances, title=None, max_x=1.1, ax=None, col
         ax.set_title(title, fontsize=25)
     ax.set_ylim(0, max_val + 0.5 * max_val)
     ax.set_xlim(0, max_x) # 30
-
+    return np.array(pdfs)
     # ax.legend()
 
 
 def plot_model_spectra(a, Q, d, ax, index, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, scalar=1.0):
+    """
+    Plots several model spectra for various discontinuity sizes
+    """
     # colour palettes
     greys = ['#393939', '#575757', '#707070', '#898989', '#a4a4a4', '#bfbfbf']
     blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
@@ -384,14 +397,15 @@ def plot_model_spectra(a, Q, d, ax, index, max_x=2.5, padding=0.0, true_freqs=No
     # gs = GridSpec(3, 1, figure=fig)
     # ax1 = fig.add_subplot(gs[0,index])
 
-    plot_kernel_spectrum(Q, cm.kernel, max_x, ax=ax[0], colours=greys, true_freqs=None, scalar=scalar)
-
+    continuous_pdfs = plot_kernel_spectrum(Q, cm.kernel, max_x, ax=ax[0], colours=greys, true_freqs=None, scalar=scalar)
+    
     # Discontinuous-control spectral GMM
     # ax2 = fig.add_subplot(gs[1,index])
     if true_freqs is not None:
-        plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax[1], colours=blues, true_freqs=true_freqs[0], scalar=scalar)
+        control_pdfs = plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax[1], colours=blues, true_freqs=true_freqs[0], scalar=scalar)
         # Discontinuous-intervention spectral GMM
-        plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax[2], colours=greens, true_freqs=true_freqs[1], scalar=scalar)
+        intervention_pdfs = plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax[2], colours=greens, true_freqs=true_freqs[1], scalar=scalar)
+   
     else:
         plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax[1], colours=blues, true_freqs=None, scalar=scalar)
         # Discontinuous-intervention spectral GMM
@@ -405,8 +419,8 @@ def plot_model_spectra(a, Q, d, ax, index, max_x=2.5, padding=0.0, true_freqs=No
 
 
 
-def plot_posterior_model_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, lineplot=False, scalar=1.0,
-                                  xticks=None, yticks=None, num_f_samples=0):
+def plot_posterior_model_spectrum(a, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, lineplot=False, scalar=1.0,
+                                  xticks=None, yticks=None, num_samples = 1000, num_f_samples=0, predict_y=False):
     """
     Plots a 4x4 subfigure, which covers the continuous fit on data, continuous GMM spectrum, discontinuous regression, and discontinuous GMM
     :arg
@@ -418,7 +432,6 @@ def plot_posterior_model_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None,
     max_x: float - maximum range of x axis on spctral GMM plots.
 
     """
-    print('test')
     sns.set(style='ticks')
     cm = a.continuous_model.model
     dcm = a.discontinuous_model.control_model
@@ -440,13 +453,13 @@ def plot_posterior_model_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None,
     blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
     greens = ['#265e52', '#3c7e69', '#599d7e', '#79b895', '#9ed0ae', '#c6e5cc']
 
-    a.continuous_model.plot_regression(ax=ax1, n_samples=1000, num_f_samples=num_f_samples, padding=padding, ylim=ylim,
-                                       lineplot=lineplot)
-    plot_kernel_spectrum(Q, cm.kernel, max_x, title="Continuous spectral density", ax=ax2, colours=greys,
+    a.continuous_model.plot_regression(ax=ax1, n_samples=num_samples, num_f_samples=num_f_samples, padding=padding, ylim=ylim,
+                                       lineplot=lineplot, predict_y=predict_y)
+    continuous_pdfs = plot_kernel_spectrum(cm.kernel, max_x, title="Continuous spectral density", ax=ax2, colours=greys,
                          true_freqs=None, scalar=scalar)
-
-    a.discontinuous_model.plot_regression(ax=ax3, n_samples=1000, num_f_samples=num_f_samples, padding=padding, ylim=ylim,
-                                          lineplot=lineplot)
+    np.save('continuous_pdfs',continuous_pdfs)
+    
+    f_samples_list = a.discontinuous_model.plot_regression(ax=ax3, n_samples=1000, num_f_samples=num_f_samples, padding=padding, ylim=ylim,lineplot=lineplot, predict_y=predict_y)
     if xticks is not None:
         ax1.set_xticklabels(xticks)
         ax3.set_xticklabels(xticks)
@@ -455,98 +468,21 @@ def plot_posterior_model_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None,
         ax3.set_yticklabels(yticks)
 
     if true_freqs is not None:
-        plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax4, title="Spectral density of the control group", colours=blues,
+        control_pdfs=plot_kernel_spectrum(dcm.kernel, max_x, ax=ax4, title="Spectral density of the control group", colours=blues,
                              true_freqs=true_freqs[0], scalar=scalar)
-        plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax5, title="Spectral density of the intervention group",
+        intervention_pdfs=plot_kernel_spectrum(dim.kernel, max_x, ax=ax5, title="Spectral density of the intervention group",
                              colours=greens, true_freqs=true_freqs[1], scalar=scalar)
+        np.save('control_pdfs', control_pdfs)
+        np.save('intervention_pdfs', intervention_pdfs)
     else:
-        plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax4, title="Control spectral density", colours=blues,
+        control_pdfs = plot_kernel_spectrum(dcm.kernel, max_x, ax=ax4, title="Control spectral density", colours=blues,
                              scalar=scalar)
-        plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax5, title="Intervention spectral density", colours=greens,
+        intervention_pdfs=plot_kernel_spectrum(dim.kernel, max_x, ax=ax5, title="Intervention spectral density", colours=greens,
                              scalar=scalar)
+        np.save('control_pdfs', control_pdfs)
+        np.save('intervention_pdfs', intervention_pdfs)
     fig.tight_layout()
     fig.subplots_adjust(top=0.9)
 
-# def plot_synthetic_control_posterior_spectrum(a, Q, max_x=2.5, padding=0.0, true_freqs=None, ylim=None, lineplot=False,
-#                                               scalar=1.0):
-#     """
-#     Plots a 4x4 subfigure, which covers the continuous fit on data, continuous GMM spectrum, discontinuous regression, and discontinuous GMM
-#     :arg
-#     a : BNQDflow analysis
-#     Q : number of components in Spectral Mixture Kernel
-#     cm : BNQDflow continuous model
-#     dcm : BNQDFlow discontinuous control model
-#     cim : BNQDflow discontinuous intervention model
-#     max_x: float - maximum range of x axis on spctral GMM plots.
-
-#     """
-#     dcm = a.discontinuous_model.control_model
-#     dim = a.discontinuous_model.intervention_model
-
-#     fig = plt.figure(constrained_layout=False, figsize=(24, 14))
-#     gs = GridSpec(8, 3, figure=fig)
-#     ax1 = fig.add_subplot(gs[:4, : -1])  # Synthetic control
-#     ax1.set_title('Counterfactual outcome', fontsize=30.0, x=0.75, y=1.02)
-#     ax2 = fig.add_subplot(gs[4:8, :-1])  # Discontinuous model fit
-#     ax2.set_title('Factual outcome', fontsize=30.0, x=0.75, y=1.02)
-#     ax3 = fig.add_subplot(gs[1:3, -1])  # Discontinuous-control spectral GMM
-#     ax4 = fig.add_subplot(gs[5:7, -1])  # Discontinuous-intervention spectral GMM
-#     # ax5 = fig.add_subplot(gs[2, :-1]) # Both at the same time
-
-#     # colour palettes
-#     blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
-#     greens = ['#265e52', '#3c7e69', '#599d7e', '#79b895', '#9ed0ae', '#c6e5cc']
-#     xx = np.linspace(-1.5, 1.5, 1000).reshape(1000, 1)
-#     X, Y = a.continuous_data
-#     xx = np.linspace(min(X), max(X), 1000).reshape(1000, 1)
-#     mean, var, samples = predict(dcm, xx, n_samples=20)
-#     x1, y1 = a.discontinuous_data[0][0], a.discontinuous_data[0][1]
-#     plot_prediction(x1, y1, xx, mean, var, ax=ax1, b=0., lineplot=lineplot)
-
-#     # Both at the same time
-#     # plot_prediction(x1, y1, xx, mean, var, ax=ax5, b=0.)
-#     # a.discontinuous_model.plot_regression(ax=ax5, n_samples=1000, num_f_samples=0, padding=padding, ylim=ylim)
-
-#     # Discontinuous model
-#     a.discontinuous_model.plot_regression(ax=ax2, n_samples=1000, num_f_samples=0, padding=padding, ylim=ylim,
-#                                           lineplot=lineplot)
-#     if true_freqs is not None:
-#         plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax3, title="Learned spectral density of the control group",
-#                              colours=blues,
-#                              true_freqs=true_freqs[0], scalar=scalar)
-#         plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax4, title="Learned spectral density of the intervention group",
-#                              colours=greens, true_freqs=true_freqs[1], scalar=scalar)
-#     else:
-#         plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax3, title="Control spectral density", colours=blues,
-#                              scalar=scalar)
-#         plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax4, title="Intervention spectral density", colours=greens,
-#                              scalar=scalar)
-#     fig.tight_layout()
-#     fig.subplots_adjust(top=0.9)
-#     # dcm = a.discontinuous_model.control_model
-#     # dim = a.discontinuous_model.intervention_model
-#     #
-#     # fig = plt.figure(constrained_layout=False, figsize=(24, 8))
-#     # gs = GridSpec(2, 3, figure=fig)
-#     # ax1 = fig.add_subplot(gs[:2, :-1])  # Discontinuous model fit
-#     # ax1.set_title('Discontinuous model', fontsize=35.0, x=0.75, y=1.02)
-#     # ax2 = fig.add_subplot(gs[0, -1])  # Discontinuous-control spectral GMM
-#     # ax3 = fig.add_subplot(gs[1, -1])  # Discontinuous-intervention spectral GMM
-#     #
-#     # # colour palettes
-#     # blues = ['#367bac', '#3787c0', '#4892c6', '#69a6d0', '#8abbdb', '#95c1de']
-#     # greens = ['#265e52', '#3c7e69', '#599d7e', '#79b895', '#9ed0ae', '#c6e5cc']
-#     #
-#     # a.discontinuous_model.plot_regression(ax=ax1, n_samples=1000, num_f_samples=0, padding=padding, ylim=ylim)
-#     # if true_freqs is not None:
-#     #     plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax2, title="Learned spectrogram of the control group", colours=blues,
-#     #                          true_freqs=true_freqs[0])
-#     #     plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax3, title="Learned spectrogram of the intervention group", colours=greens,
-#     #                      true_freqs=true_freqs[1])
-#     # else:
-#     #     plot_kernel_spectrum(Q, dcm.kernel, max_x, ax=ax2, title="Control Spectral GMM", colours=blues)
-#     #     plot_kernel_spectrum(Q, dim.kernel, max_x, ax=ax3, title="Intervention Spectral GMM", colours=greens)
-#     # fig.tight_layout()
-#     # fig.subplots_adjust(top=0.9)
-
+    return f_samples_list
 

@@ -32,6 +32,45 @@ class EffectSizeMeasure(ABC):
         """
         raise NotImplementedError
 
+class MAE(EffectSizeMeasure):
+    """
+    Calculates the effect size as the absolute difference between the discontinuous control model and the
+    discontinuous intervention model, for the intervention observations.
+    d_{ITS}(x) = f^(I)_(x) − f^(C)_(x),  x≥x
+    """
+    def __init__(self, x_range: Tuple[float, float] = None):
+        self.x_range = x_range
+        
+    @visitor(Analysis)
+    def calculate_effect_size(self, analysis):
+        raise NotImplementedError("There doesn't exist an implementation for the sharp effect size measure for this "
+                                  "analysis: {}".format(analysis.__class__.__name__))
+
+    @visitor(SimpleAnalysis)
+    def calculate_effect_size(self, analysis: SimpleAnalysis) -> None:
+        """
+        Computes the effect size between the control and intevrvention model for all intervention observations
+        
+        Returns: Mean absolute effect size
+        """
+        ip        = analysis.intervention_point
+        disc_data = analysis.discontinuous_data
+        (x_control, y_control), (x_intervention, y_intervention) = disc_data
+       
+        dcm       = analysis.discontinuous_model.control_model
+        dim       = analysis.discontinuous_model.intervention_model
+        
+        # Means and variances of the two sub-models of the discontinuous model.
+        x_intervention = x_intervention.reshape(len(x_intervention),1)
+        control_mean, _ = dcm.predict_y(x_intervention)
+        interv_mean, _   = dim.predict_y(x_intervention)
+  
+        causal_effect = np.absolute(np.array(control_mean) - np.array(interv_mean))
+        sum_es        = np.sum(causal_effect)
+        average_es    = np.mean(causal_effect)
+        self.effect_size = (causal_effect, average_es, sum_es)        
+        
+        
 
 class Sharp(EffectSizeMeasure):
     """

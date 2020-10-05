@@ -1,4 +1,3 @@
-import numpy as np
 import gpflow
 import tensorflow as tf
 from gpflow.utilities import print_summary, positive
@@ -9,13 +8,26 @@ from gpflow.utilities.ops import square_distance
 import tensorflow_probability as tfp
 from tensorflow_probability import distributions as tfd
 f64 = gpflow.utilities.to_default_float
-from scipy.fftpack import fft
+
 import math
+import numpy as np
+
+from scipy.fftpack import fft
 from scipy.integrate import cumtrapz
+from scipy.signal import periodogram, butter, filtfilt
+import scipy.signal as signal
 from sklearn.mixture import GaussianMixture
 import matplotlib.pyplot as plt
 
-def SpectralMixture(Q, mixture_weights=None, frequencies=None, lengthscales=None,max_freq=1.0, max_length=1.0,active_dims = None, ytrain=None):
+import sys
+import os
+import shutil
+import posixpath
+import warnings
+
+
+
+def SpectralMixture(Q=None, mixture_weights=None, frequencies=None, lengthscales=None,max_freq=1.0, max_length=1.0,active_dims = None, x=None, y=None, fs = 1, q_range=(1,10)):
     """
     Spectral Mixture kernel as proposed by Wilson-Adams (2013)
     Currently supports only 1 dimension.
@@ -24,62 +36,74 @@ def SpectralMixture(Q, mixture_weights=None, frequencies=None, lengthscales=None
     - Srikanth Gadicherla (https://github.com/imsrgadich/gprsm/blob/master/gprsm/spectralmixture.py)
     :arg
     """
-    if ytrain is not None:
-        emp_frequencies, emp_lengthscales, emp_mixture_weights = initialize_from_emp_spec(Q, ytrain)
-        print('Empirical mixture weights: ', emp_mixture_weights)
-        print('Empirical frequencies: ', emp_frequencies)
-        print('Empirical variances: ', emp_lengthscales)
-        lengthscales = 1/np.sqrt(emp_lengthscales)
-        print('lengthscales',lengthscales)
-        mixture_weights = emp_mixture_weights
-        frequencies = emp_frequencies
+    if Q is None:
+        determine_number_components(x,y, fs, q_range)
+            
+    if y is not None:
+        frequencies, lengthscales, mixture_weights = initialize_from_emp_spec(Q, x, y, fs)
         
-
     else:
         if mixture_weights is None:
             mixture_weights = [1.0 for i in range(Q)]
         if frequencies is None:
             frequencies = [((i+1)/Q)* max_freq for i in range(Q)]
         if lengthscales is None:
-            #lengthscales = [max_length/Q for _ in range(Q)]
             lengthscales = [max_length for _ in range(Q)]
 
     components = [SpectralMixtureComponent(i+1, mixture_weights[i], frequencies[i],lengthscales[i], active_dims=active_dims) for i in range(Q)]
     return Sum(components) #if len(components) > 1 else components[0]
 
-def initialize_from_emp_spec(Q, ytrain):
-    """:arg
-    Function taken entirely from GPyTorch's SM kernel implementation:
-    https://gpytorch.readthedocs.io/en/latest/_modules/gpytorch/kernels/spectral_mixture_kernel.html#SpectralMixtureKernel
+   
+       
+def initialize_from_emp_spec(Q, x, y, fs,plot=False):
     """
-    N = ytrain.shape[0]
-    emp_spect = np.abs(fft(ytrain.flatten())) ** 2 / N
-    M = math.floor(N / 2)
-
-    freq1 = np.arange(M + 1)
-    freq2 = np.arange(-M + 1, 0)
-    freq = np.hstack((freq1, freq2)) / N
-    freq = freq[: M + 1]
-    emp_spect = emp_spect[: M + 1]
-    total_area = np.trapz(emp_spect, freq)
-    spec_cdf = np.hstack((np.zeros(1), cumtrapz(emp_spect, freq)))
+    Initializes the Spectral Mixture hyperparameters by fitting a GMM on the empirical spectrum, 
+    found by Lombscargle periodogram.
+    Function largely taken from: https://docs.gpytorch.ai/en/v1.1.1/_modules/gpytorch/kernels/spectral_mixture_kernel.html#SpectralMixtureKernel.initialize_from_data_empspect
+    Instead, here the lom-sccargle periodogram is used to fit the GMM to allow analysis of ununiformly sampled data.
+    
+    :param Q (int) number of spectral components in SM kernel
+    :param x (np.array of float64) X values of input data
+    :param y NumPy array of float64. Y values of input data
+    
+    return: frequencies lengthscales, mixture weights, all of which are NumPy arrays of shape (Q,)
+    """
+    
+    freqs = np.linspace(0.01, fs, 1000)
+    Pxx = signal.lombscargle(x, y, freqs, normalize=False)
+    
+    if plot:    
+        fig  = plt.figure(figsize=(8,4))
+        plt.plot(freqs, Pxx, color='blue')
+        plt.show()
+  
+    total_area = np.trapz(Pxx, freqs)
+    spec_cdf = np.hstack((np.zeros(1), cumtrapz(Pxx, freqs)))
     spec_cdf = spec_cdf / total_area
 
     a = np.random.rand(1000, 1)
     p, q = np.histogram(a, spec_cdf)
     bins = np.digitize(a, q)
-    slopes = (spec_cdf[bins] - spec_cdf[bins - 1]) / (freq[bins] - freq[bins - 1])
-    intercepts = spec_cdf[bins - 1] - slopes * freq[bins - 1]
+    slopes = (spec_cdf[bins] - spec_cdf[bins - 1]) / (freqs[bins] - freqs[bins - 1])
+    intercepts = spec_cdf[bins - 1] - slopes * freqs[bins - 1]
     inv_spec = (a - intercepts) / slopes
 
-    GMM = GaussianMixture(n_components=Q, covariance_type="diag").fit(inv_spec)
+    GMM = GaussianMixture(n_components=Q, covariance_type="full")
+    GMM.fit(X=inv_spec)
     means = GMM.means_
     varz = GMM.covariances_
     weights = GMM.weights_
+    
+    emp_frequencies, emp_lengthscales, emp_mixture_weights = means.flatten(), varz.flatten(), weights.flatten()   
+    lengthscales =  1/np.sqrt(emp_lengthscales) 
+    mixture_weights = emp_mixture_weights 
+    frequencies = emp_frequencies 
+#     print(f'frequencies: {frequencies}')
+#     print(f'lengthscales: {lengthscales}')
+#     print(f'weights: {mixture_weights}')
 
-    return means.flatten(), varz.flatten(), weights.flatten()
-
-
+    return frequencies, lengthscales, mixture_weights
+        
 
 class SpectralMixtureComponent(Kernel):
     """
@@ -98,7 +122,7 @@ class SpectralMixtureComponent(Kernel):
             sigmoid = tfp.bijectors.Sigmoid()
             logistic = tfp.bijectors.Chain([affine,sigmoid])
             return logistic
-        logistic = logit_transform(0.0001, 100000) # numerical stability
+        logistic = logit_transform(0.0001, 9000000) # numerical stability
         #truncated_frequency = logit_transform(0.0001, 350) # transform to limit the frequencies at the nyquist frequency
         
         self.mixture_weight = gpflow.Parameter(mixture_weight, transform=logistic)
@@ -116,11 +140,13 @@ class SpectralMixtureComponent(Kernel):
         # self.lengthscale.prior = tfd.Gamma(f64(4.0 ), f64(.2))
 
         # heart rate priors
+        #self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))         
         
-        self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))
-#         self.mixture_weight.prior = tfd.Gamma(f64(1.0), f64(1.0))
-        
-    
+            
+        # yoga prior        
+        #self.mixture_weight.prior = tfd.Gamma(f64(2.), f64(1.0))
+        #self.frequency.prior = tfd.Normal(f64(frequency), f64(10.))
+
 
 
 
