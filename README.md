@@ -1,5 +1,5 @@
 
-# Spectral-Discontinuity-Design
+# Spectral Discontinuity Design
 A Python pipeline that implements Spectral Discontinuity Design (SDD) for Interrupted Time Series, based on [gpflow 2.0](https://gpflow.readthedocs.io/en/master/). 
 
 Quasi-experimental designs allow researchers to determine the effect of a treatment, even when randomized controlled trials are infeasible. 
