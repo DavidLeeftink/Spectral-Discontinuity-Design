@@ -129,26 +129,6 @@ class SpectralMixtureComponent(Kernel):
         self.frequency = gpflow.Parameter(frequency, transform=logistic)
         self.lengthscale = gpflow.Parameter(lengthscale, transform=logistic)        
 
-        # Sum of Cosine priors 2 cosines (the plots do not use priors currently.)
-        #self.frequency.prior = tfd.Normal(f64(frequency), f64(10.))
-        #self.mixture_weight.prior = tfd.Gamma(f64(2.), f64(1.0))
-        #self.lengthscale.prior = tfd.Gamma(f64(2.), f64(1.))
-        
-        # Sum of cosine priors 5 cosines
-        # self.frequency.prior = tfd.Gamma(f64(2.0), f64(1.))
-        # self.mixture_weight.prior = tfd.Gamma(f64(1.0), f64(1.0))
-        # self.lengthscale.prior = tfd.Gamma(f64(4.0 ), f64(.2))
-
-        # heart rate priors
-        #self.lengthscale.prior = tfd.Gamma(f64(8.), f64(.6))         
-        
-            
-        # yoga prior        
-        #self.mixture_weight.prior = tfd.Gamma(f64(2.), f64(1.0))
-        #self.frequency.prior = tfd.Normal(f64(frequency), f64(10.))
-
-
-
 
     def K(self, X, X2=None):
         if X2 is None:
@@ -175,9 +155,6 @@ class SpectralMixtureComponent(Kernel):
         Function to overwrite gpflow.kernels.stationaries
         Returns ||(X - X2ᵀ) / ℓ||² i.e. squared L2-norm.
         """
-#         X_scaled = X / self.lengthscale
-#         X2_scaled = X2 / self.lengthscale if X2 is not None else X2 / self.lengthscale
-#         return square_distance(X_scaled, X2_scaled)
         X = X / self.lengthscale
         Xs = tf.reduce_sum(tf.square(X), axis=1)
 
