@@ -31,7 +31,7 @@ import csv
 import pandas as pd
 import seaborn as sns
 import wfdb
-from scipy.io import loadmat  # this is the SciPy module that loads mat-files
+from scipy.io import loadmat 
 
 # Local scripts
 #sys.path.insert(0, '/home/david/Documenten/Courses/Spectral Discontinuity Design/Thesis AI/Implementation/')
@@ -457,7 +457,7 @@ def plot_posterior_model_spectrum(a, max_x=2.5, padding=0.0, true_freqs=None, yl
                                        lineplot=lineplot, predict_y=predict_y)
     continuous_pdfs = plot_kernel_spectrum(cm.kernel, max_x, title="Continuous spectral density", ax=ax2, colours=greys,
                          true_freqs=None, scalar=scalar)
-    np.save('continuous_pdfs',continuous_pdfs)
+    #np.save('continuous_pdfs',continuous_pdfs)
     
     f_samples_list = a.discontinuous_model.plot_regression(ax=ax3, n_samples=1000, num_f_samples=num_f_samples, padding=padding, ylim=ylim,lineplot=lineplot, predict_y=predict_y)
     if xticks is not None:
@@ -472,15 +472,15 @@ def plot_posterior_model_spectrum(a, max_x=2.5, padding=0.0, true_freqs=None, yl
                              true_freqs=true_freqs[0], scalar=scalar)
         intervention_pdfs=plot_kernel_spectrum(dim.kernel, max_x, ax=ax5, title="Spectral density of the intervention group",
                              colours=greens, true_freqs=true_freqs[1], scalar=scalar)
-        np.save('control_pdfs', control_pdfs)
-        np.save('intervention_pdfs', intervention_pdfs)
+        #np.save('control_pdfs', control_pdfs)
+        #np.save('intervention_pdfs', intervention_pdfs)
     else:
         control_pdfs = plot_kernel_spectrum(dcm.kernel, max_x, ax=ax4, title="Control spectral density", colours=blues,
                              scalar=scalar)
         intervention_pdfs=plot_kernel_spectrum(dim.kernel, max_x, ax=ax5, title="Intervention spectral density", colours=greens,
                              scalar=scalar)
-        np.save('control_pdfs', control_pdfs)
-        np.save('intervention_pdfs', intervention_pdfs)
+        #np.save('control_pdfs', control_pdfs)
+        #np.save('intervention_pdfs', intervention_pdfs)
     fig.tight_layout()
     fig.subplots_adjust(top=0.9)
 

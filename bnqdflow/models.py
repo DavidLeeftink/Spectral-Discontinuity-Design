@@ -510,7 +510,7 @@ class GPMContainer(Module):
             # Only if num_f_samples > 0 and the latent function is plotted instead of
             # the prediction of held-out data points
             f_samples_list = self.predict_f_samples(x_samples_list, num_f_samples)
-            np.save('functionsamples_matern',f_samples_list)
+            #np.save('functionsamples_matern',f_samples_list)
             i = 0
             for f_samples, x_samples in zip(f_samples_list, x_samples_list):
                 for f_sample in f_samples:
