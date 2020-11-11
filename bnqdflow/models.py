@@ -483,11 +483,11 @@ class GPMContainer(Module):
         means, variances = means_and_vars
         control_mean, control_std = means
         mean_disc = np.array([control_mean.numpy(), control_std.numpy()])
-        np.save('meanvar_control_discontinuous', mean_disc)
+        #np.save('meanvar_control_discontinuous', mean_disc)
         
         intervention_mean, intervention_std = variances
         intervention_disc = np.array([intervention_mean.numpy(), intervention_std.numpy()])
-        np.save('meanvar_intervention_discontinuous', intervention_disc)
+        #np.save('meanvar_intervention_discontinuous', intervention_disc)
         
         # Ensures only a single label occurs in the pyplot legend
         labeled = False
@@ -510,7 +510,7 @@ class GPMContainer(Module):
             # Only if num_f_samples > 0 and the latent function is plotted instead of
             # the prediction of held-out data points
             f_samples_list = self.predict_f_samples(x_samples_list, num_f_samples)
-            #np.save('functionsamples',f_samples_list)
+            np.save('functionsamples_matern',f_samples_list)
             i = 0
             for f_samples, x_samples in zip(f_samples_list, x_samples_list):
                 for f_sample in f_samples:
@@ -681,7 +681,7 @@ class ContinuousModel(GPMContainer):
         mean_cont = mean.numpy()
         var_cont = var.numpy()
         continuous = np.array([mean_cont, var_cont])
-        np.save('meanvar_continuous', continuous)
+        #np.save('meanvar_continuous', continuous)
 
         # Plots the 95% confidence interval
         ax.fill_between(x_samples, mean[:, 0] - 2. * np.sqrt(var[:, 0]),
