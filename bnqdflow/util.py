@@ -16,7 +16,9 @@ from numpy import ndarray
 from tensorflow import Tensor
 
 from bnqdflow import ContinuousData, DiscontinuousData
-
+"""
+The code and class structure is written by Melle Starke.
+"""
 
 ###############################
 ###### Data Manipulation ######

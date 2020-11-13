@@ -5,6 +5,9 @@ from . import (
     effect_size_measures,
     analyses,
 )
+"""
+The code and class structure is written by Melle Starke.
+"""
 
 # GPflow update/install command: pip install -U git+https://github.com/GPflow/GPflow.git@develop#egg=gpflow
 # TODO: look into tensorflow_probability

@@ -4,7 +4,9 @@ from typing import List, Union, Tuple
 
 from gpflow.models.model import RegressionData
 
-
+"""
+The code and class structure is written by Melle Starke.
+"""
 class State:
     """
     Really ugly way to allow for setting and getting of global variables.

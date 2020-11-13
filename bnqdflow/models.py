@@ -21,7 +21,9 @@ from gpflow.models.model import InputData, MeanAndVariance, RegressionData
 ##############################
 ###### Global Constants ######
 ##############################
-
+"""
+The code and class structure is written by Melle Starke.
+"""
 counter = 0
 
 MAX_OPTIMIZER_ITERATIONS = 100

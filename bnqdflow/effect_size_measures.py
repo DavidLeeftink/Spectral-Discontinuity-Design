@@ -9,7 +9,9 @@ from abc import abstractmethod, ABC
 
 from bnqdflow.analyses import Analysis, SimpleAnalysis, PlaceholderAnalysis
 from bnqdflow.util import visitor
-
+"""
+The code and class structure is written by Melle Starke.
+"""
 
 class EffectSizeMeasure(ABC):
     """

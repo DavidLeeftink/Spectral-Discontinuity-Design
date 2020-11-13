@@ -15,6 +15,9 @@ from bnqdflow.models import ContinuousModel, DiscontinuousModel
 from bnqdflow import ContinuousData, DiscontinuousData, USE_CUSTOM_KERNEL_COPY_FUNCTION
 from bnqdflow import util
 
+"""
+The code and class structure is written by Melle Starke.
+"""
 
 class Analysis(tf.Module):
     """
